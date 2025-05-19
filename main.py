@@ -30,8 +30,20 @@ def get_page_dimensions(file_path: str) -> list[tuple[float, float]]:
 
 # 定义 MCP 工具：统计各尺寸纸张的数量和页码范围
 @mcp.tool()
-def count_pages_by_size(dimensions: list[tuple[float, float]]) -> dict:
+def analyze_pdf_pages(file_path: str) -> dict:
     """统计各尺寸纸张的数量和页码范围"""
+    doc = fitz.open(file_path)
+    dimensions = []
+    for page in doc:
+        rect = page.rect
+        # 将点单位（默认 PDF 单位）转换为毫米，1 点 = 0.352777778 毫米
+        width_mm = rect.width * 0.352777778
+        height_mm = rect.height * 0.352777778
+        # 考虑页面可能旋转的情况，交换宽高
+        if page.rotation in [90, 270]:
+            width_mm, height_mm = height_mm, width_mm
+        dimensions.append((width_mm, height_mm))
+
     # 记录各尺寸对应的页码
     size_pages = {}
     # 对文档中实际出现的尺寸进行统计

@@ -29,30 +29,39 @@ pip install fitz fastmcp
 ```
 或者使用国内镜像源加速安装：
 ```powershell
-pip install fitz fastmcp -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install pymupdf fastmcp -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
+### 3. 生成配置文件（以Trae为例）
+运行 `generate_config.py` 文件生成 `mcp_config.json`：
+在命令行中执行
+```powershell
+python generate_config.py
+```
 
+将自动生成 `mcp_config.json` 文件，内容如下：
+```json
+{
+    "mcpServers": {
+        "PDFAnalyzer": {
+            "command": "虚拟环境中的python.exe",
+            "args": [
+                "主程序main.py的完整路径"
+            ]
+        }
+    }
+}
+```
 #### 使用说明
 
 1.  确保已经按照安装教程完成环境配置。
-2.  运行 `main.py` 文件：在命令行中执行 `python main.py`。
-3.  按照提示输入需要分析的 PDF 文件路径。
-4.  查看输出结果，程序会显示 PDF 文件的页数、尺寸等信息。
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+2.  在'Trae'软件中，新增MCP，填入配置json内容。
+3.  测试运行，确保配置正确。
+- 测试1：调用mcp服务，告诉我一下这个pdf文件的页数吗？
+- 测试2：调用mcp服务，按打印尺寸分别统计下页数和页码？
 
 
-#### 特技
+#### 注意事项
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+-   确保使用的是虚拟环境中的 Python 解释器，涉及到依赖问题。
+-   先用纯英文目录测试，成功后再测试中文目录。
