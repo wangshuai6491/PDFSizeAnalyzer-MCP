@@ -1,17 +1,10 @@
 {
-  "mcpServers": {
-    "PDFAnalyzer": {
-    "command": "uv",
-    "args": [
-      "run",
-      "--with",
-      "PyMuPDF",
-      "--with",
-      "mcp[cli]",
-      "mcp",
-      "run",
-      "E:\\trae\\Size-Tracker-MCP\\main.py"
-    ]
-  }
+    "mcpServers": {
+        "PDFAnalyzer": {
+            "command": "e:\\trae\\mcp\\pdfsize-analyzer-mcp\\venv\\Scripts\\python.exe",
+            "args": [
+                "e:\\trae\\mcp\\pdfsize-analyzer-mcp\\main.py"
+            ]
+        }
     }
 }

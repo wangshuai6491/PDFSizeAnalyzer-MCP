@@ -9,15 +9,36 @@
 
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+### 1. 进入项目目录
+在 Windows 系统中，可以使用以下命令进入项目目录：
+```powershell
+cd 替换为你的目录\pdfsize-analyzer-mcp
+```
+
+### 2. 创建虚拟环境
+在 Windows 系统中，可以使用以下命令创建并激活虚拟环境：
+```powershell
+python -m venv venv
+.\venv\Scripts\activate
+```
+
+### 2. 安装依赖
+项目依赖 `fitz` 和 `fastmcp`，可以使用以下命令安装：
+```powershell
+pip install fitz fastmcp
+```
+或者使用国内镜像源加速安装：
+```powershell
+pip install fitz fastmcp -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  确保已经按照安装教程完成环境配置。
+2.  运行 `main.py` 文件：在命令行中执行 `python main.py`。
+3.  按照提示输入需要分析的 PDF 文件路径。
+4.  查看输出结果，程序会显示 PDF 文件的页数、尺寸等信息。
 
 #### 参与贡献
 
