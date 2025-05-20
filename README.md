@@ -68,9 +68,9 @@ python test_main.py
 ```
 如果程序正常运行，将输出：
 ```bash
-总页数: 6
+Ran 3 tests in 0.168s
 
-尺寸统计: [{'size': (210.01, 297.0), 'paper_type': 'A4', 'total_pages': 3, 'page_numbers': [1, 2, 6]}, {'size': (297.0, 420.0), 'paper_type': 'A3', 'total_pages': 3, 'page_numbers': [3, 4, 5]}]
+OK
 ```
 
 ### 4. 生成配置文件（以Trae为例）
