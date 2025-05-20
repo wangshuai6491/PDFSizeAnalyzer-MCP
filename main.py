@@ -1,6 +1,7 @@
 import fitz
 from fastmcp import FastMCP
-
+import os
+from PyPDF2 import PdfReader, PdfWriter
 # 创建一个 FastMCP 实例
 mcp = FastMCP("PDFSizeAnalyzer-MCP")
 
@@ -107,6 +108,75 @@ def convert_pdf_to_images(file_path: str)-> list:
         pix.save(str(image_path))
         image_paths.append(str(image_path))
     return image_paths
+
+@mcp.tool()
+def split_pdf_by_chapters(file_path: str) -> list:
+    """
+    按章节拆分PDF文件
+    参数:
+        file_path (str): PDF文件路径
+    返回:
+        list: 包含章节信息和保存路径的字典列表，每个字典包含以下字段:
+            - title (str): 章节标题
+            - start_page (int): 章节起始页码(1-based)
+            - end_page (int): 章节结束页码(1-based)
+            - output_path (str): 章节PDF保存路径
+    """
+    # 创建同名文件夹
+    output_dir = os.path.splitext(file_path)[0]
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # 使用PyPDF2提取书签信息
+    reader = PdfReader(file_path)
+    chapters = []
+    
+    # 获取所有1级书签作为章节标题
+    for outline in reader.outline:
+        if isinstance(outline, dict) and outline.get('/Title') and outline.get('/Page'):
+            title = outline['/Title']
+            page_num = reader.get_destination_page_number(outline)
+            chapters.append({
+                'title': title,
+                'start_page': page_num + 1  # 转换为1-based索引
+            })
+    
+    # 使用PyPDF2进行拆分
+    if not chapters:
+        print("未找到章节信息")
+        return None
+    
+    reader = PdfReader(file_path)
+    result = []
+    
+    # 为每个章节创建PDF
+    for i, chapter in enumerate(chapters):
+        writer = PdfWriter()
+        start_page = chapter['start_page'] - 1  # 转换为0-based索引
+        end_page = chapters[i+1]['start_page'] - 1 if i+1 < len(chapters) else len(reader.pages)
+        
+        for page_num in range(start_page, end_page):
+            writer.add_page(reader.pages[page_num])
+        
+        # 保存章节PDF
+        output_path = os.path.join(output_dir, f"{chapter['title']}.pdf")
+        with open(output_path, 'wb') as out_pdf:
+            writer.write(out_pdf)
+        
+        # 保存章节信息到文本文件
+        info_path = os.path.join(output_dir, "chapters_info.txt")
+        with open(info_path, 'a', encoding='utf-8') as info_file:
+            end_page = chapters[i+1]['start_page'] - 1 if i+1 < len(chapters) else len(reader.pages)
+            info_file.write(f"{chapter['title']}: 第{chapter['start_page']}-{end_page}页\n")
+        
+        # 添加到结果字典
+        result.append({
+            'title': chapter['title'],
+            'start_page': chapter['start_page'],
+            'end_page': end_page,
+            'output_path': output_path
+        })
+    
+    return result
 
 # 主程序：运行 MCP 服务器
 if __name__ == "__main__":

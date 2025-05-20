@@ -21,6 +21,20 @@ def convert_pdf_to_images(file_path: str)-> list:
     返回:
         list: 包含所有生成图片文件路径的列表。
     """
+
+### 3.按章节或1级书签拆分PDF文件，返回包含章节信息和保存路径的字典列表。
+def split_pdf_by_chapters(file_path: str) -> list:
+    """
+    按章节拆分PDF文件
+    参数:
+        file_path (str): PDF文件路径
+    返回:
+        list: 包含章节信息和保存路径的字典列表，每个字典包含以下字段:
+            - title (str): 章节标题
+            - start_page (int): 章节起始页码(1-based)
+            - end_page (int): 章节结束页码(1-based)
+            - output_path (str): 章节PDF保存路径
+    """
 ## 安装教程
 
 ### 1. 进入项目目录
@@ -37,15 +51,15 @@ python -m venv venv
 ```
 
 ### 2. 安装依赖
-项目依赖 `pymupdf` 和 `fastmcp`，注意是`pymupdf`,不是`fitz`
+项目依赖 `pymupdf`、`fastmcp` 和 `PyPDF2`，注意是`pymupdf`,不是`fitz`
 
 可以使用以下命令安装：
 ```powershell
-pip install pymupdf fastmcp
+pip install pymupdf fastmcp PyPDF2
 ```
 或者使用国内镜像源加速安装：
 ```powershell
-pip install pymupdf fastmcp -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install pymupdf fastmcp PyPDF2 -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 ### 3. 测试程序(确保程序输出正确，可以跳过)
 运行'test_main.py'文件测试程序是否正常运行：
