@@ -1,5 +1,5 @@
 import unittest
-from main import analyze_pdf_pages
+from main import analyze_pdf_pages, convert_pdf_to_images
 
 class TestAnalyzePDFPages(unittest.TestCase):
     def test_analyze_pdf_pages(self):
@@ -13,6 +13,17 @@ class TestAnalyzePDFPages(unittest.TestCase):
         self.assertIsInstance(result, tuple)
         self.assertIsInstance(result[0], int)
         self.assertIsInstance(result[1], list)
+
+    def test_convert_pdf_to_images(self):
+        # 请替换为实际的 PDF 文件路径
+        file_path = '测试文稿.pdf'
+        result = convert_pdf_to_images(file_path)
+        print('\n')
+        print('图片路径:', result)
+        print('\n')
+        self.assertIsInstance(result, list)
+        for path in result:
+            self.assertIsInstance(path, str)
 
 if __name__ == '__main__':
     unittest.main()

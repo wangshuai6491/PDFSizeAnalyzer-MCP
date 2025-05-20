@@ -84,6 +84,30 @@ def analyze_pdf_pages(file_path: str) -> tuple:
         for key, value in size_pages.items()
     ]
 
+@mcp.tool()
+def convert_pdf_to_images(file_path: str)-> list:
+    """
+    将 PDF 的每一页转换为图片，并保存到以 PDF 名称命名的文件夹中。
+    参数:
+        file_path (str): 单个 PDF 文件的路径。
+    返回:
+        list: 包含所有生成图片文件路径的列表。
+    """
+    import os
+    from pathlib import Path
+    doc = fitz.open(file_path)
+    pdf_name = Path(file_path).stem
+    output_folder = Path(os.getcwd()) / pdf_name
+    output_folder.mkdir(parents=True, exist_ok=True)
+    image_paths = []
+    for page_num in range(len(doc)):
+        page = doc.load_page(page_num)
+        pix = page.get_pixmap()
+        image_path = output_folder / f'{pdf_name}_page{page_num + 1}.png'
+        pix.save(str(image_path))
+        image_paths.append(str(image_path))
+    return image_paths
+
 # 主程序：运行 MCP 服务器
 if __name__ == "__main__":
     mcp.run()

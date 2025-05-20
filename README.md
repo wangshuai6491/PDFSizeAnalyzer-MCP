@@ -12,7 +12,15 @@ def analyze_pdf_pages(file_path: str) -> tuple:
         tuple: 包含两个元素的元组，第一个元素是 PDF 的总页数 (int)，第二个元素是一个列表 (list)，
                列表中的每个元素是一个字典，包含纸张尺寸、纸张类型、总页数和页码范围。
     """
-
+### 2.将 PDF 的每一页转换为图片，并保存到以 PDF 名称命名的文件夹中。
+def convert_pdf_to_images(file_path: str)-> list:
+    """
+    将 PDF 的每一页转换为图片，并保存到以 PDF 名称命名的文件夹中。
+    参数:
+        file_path (str): 单个 PDF 文件的路径。
+    返回:
+        list: 包含所有生成图片文件路径的列表。
+    """
 ## 安装教程
 
 ### 1. 进入项目目录
