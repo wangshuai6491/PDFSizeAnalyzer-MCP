@@ -118,8 +118,8 @@ def split_pdf_by_chapters(file_path: str) -> list:
     返回:
         list: 包含章节信息和保存路径的字典列表，每个字典包含以下字段:
             - title (str): 章节标题
-            - start_page (int): 章节起始页码(1-based)
-            - end_page (int): 章节结束页码(1-based)
+            - start_page (int): 章节起始页码
+            - end_page (int): 章节结束页码
             - output_path (str): 章节PDF保存路径
     """
     # 创建同名文件夹
