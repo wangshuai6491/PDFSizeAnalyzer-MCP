@@ -98,10 +98,12 @@
                         <ul>
                             ${data.size_stats.map(size => 
                                 `<li>
-                                    尺寸: ${size.size}mm<br>
-                                    类型: ${size.type}<br>
-                                    页数: ${size.count}<br>
-                                    页码范围: ${size.pages}
+                                    <strong>纸张类型:</strong> ${size.paper_type}<br>
+                                    <strong>尺寸:</strong> ${size.size[0]}mm × ${size.size[1]}mm<br>
+                                    <strong>页数:</strong> ${size.total_pages}<br>
+                                    <strong>页码范围:</strong> ${size.page_numbers.length > 10 ? 
+                                        `${size.page_numbers[0]}-${size.page_numbers[size.page_numbers.length-1]}` : 
+                                        size.page_numbers.join(', ')}
                                 </li>`
                             ).join('')}
                         </ul>
