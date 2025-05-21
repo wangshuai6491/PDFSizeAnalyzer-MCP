@@ -55,11 +55,11 @@ python -m venv venv
 
 可以使用以下命令安装：
 ```powershell
-pip install pymupdf fastmcp PyPDF2
+pip install flask pymupdf fastmcp PyPDF2
 ```
 或者使用国内镜像源加速安装：
 ```powershell
-pip install pymupdf fastmcp PyPDF2 -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install flask pymupdf fastmcp PyPDF2 -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 ### 3. 测试程序(确保程序输出正确，可以跳过)
 运行'test_main.py'文件测试程序是否正常运行：

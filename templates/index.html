@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF分析工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PDF分析工具</h1>
+        
+        <div class="upload-area">
+            <input type="file" id="pdfFile" accept=".pdf">
+        </div>
+        
+        <div class="btn-group">
+            <button onclick="analyze('page_count')">分析页数</button>
+            <button onclick="analyze('convert_images')">转换为图片</button>
+            <button onclick="analyze('split_chapters')">章节拆分</button>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+    
+    <script>
+        function analyze(action) {
+            const fileInput = document.getElementById('pdfFile');
+            const resultDiv = document.getElementById('result');
+            
+            if (!fileInput.files[0]) {
+                resultDiv.innerHTML = '请先选择PDF文件';
+                return;
+            }
+            
+            resultDiv.innerHTML = '处理中...';
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('action', action);
+            
+            fetch('/analyze', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultDiv.innerHTML = `错误: ${data.error}`;
+                    return;
+                }
+                
+                let resultHTML = '';
+                if (action === 'page_count') {
+                    resultHTML = `
+                        <h3>分析结果</h3>
+                        <p>总页数: ${data.page_count}</p>
+                        <p>尺寸统计:</p>
+                        <ul>
+                            ${data.size_stats.map(size => 
+                                `<li>
+                                    尺寸: ${size.size}mm<br>
+                                    类型: ${size.type}<br>
+                                    页数: ${size.count}<br>
+                                    页码范围: ${size.pages}
+                                </li>`
+                            ).join('')}
+                        </ul>
+                    `;
+                } else if (action === 'convert_images') {
+                    resultHTML = `
+                        <h3>转换结果</h3>
+                        <p>生成的图片:</p>
+                        <ul>
+                            ${data.image_paths.map(path => `<li>${path}</li>`).join('')}
+                        </ul>
+                    `;
+                } else if (action === 'split_chapters') {
+                    resultHTML = `
+                        <h3>章节拆分结果</h3>
+                        <ul>
+                            ${data.chapters.map(chapter => 
+                                `<li>
+                                    <strong>${chapter.title}</strong><br>
+                                    起始页: ${chapter.start_page}<br>
+                                    结束页: ${chapter.end_page}<br>
+                                    输出路径: ${chapter.output_path}
+                                </li>`
+                            ).join('')}
+                        </ul>
+                    `;
+                }
+                
+                resultDiv.innerHTML = resultHTML;
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `请求失败: ${error}`;
+            });
+        }
+    </script>
+</body>
+</html>
