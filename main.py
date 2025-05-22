@@ -75,12 +75,27 @@ def analyze_pdf_pages(file_path: str) -> tuple:
             size_pages[size_key] = (paper_type, [])
         size_pages[size_key][1].append(i + 1)
 
+    def merge_page_numbers(pages):
+        if not pages:
+            return ""
+        pages_sorted = sorted(pages)
+        ranges = []
+        start = end = pages_sorted[0]
+        for page in pages_sorted[1:]:
+            if page == end + 1:
+                end = page
+            else:
+                ranges.append(f"{start}-{end}" if start != end else f"{start}")
+                start = end = page
+        ranges.append(f"{start}-{end}" if start != end else f"{start}")
+        return ", ".join(ranges)
+
     return total_pages, [
         {
             "size": key,
             "paper_type": value[0] if value[0] else f'Custom{int(key[0])}+{int(key[1])}',
             "total_pages": len(value[1]),
-            "page_numbers": value[1]
+            "page_numbers": merge_page_numbers(value[1])
         }
         for key, value in size_pages.items()
     ]

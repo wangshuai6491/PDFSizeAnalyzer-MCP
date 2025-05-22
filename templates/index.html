@@ -103,7 +103,7 @@
                                     <strong>页数:</strong> ${size.total_pages}<br>
                                     <strong>页码范围:</strong> ${size.page_numbers.length > 10 ? 
                                         `${size.page_numbers[0]}-${size.page_numbers[size.page_numbers.length-1]}` : 
-                                        size.page_numbers.join(', ')}
+                                        Array.isArray(size.page_numbers) ? size.page_numbers.join(', ') : size.page_numbers}
                                 </li>`
                             ).join('')}
                         </ul>

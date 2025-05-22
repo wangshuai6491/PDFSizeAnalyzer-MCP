@@ -4,7 +4,7 @@ from main import analyze_pdf_pages, convert_pdf_to_images, split_pdf_by_chapters
 class TestAnalyzePDFPages(unittest.TestCase):
     def test_analyze_pdf_pages(self):
         # 请替换为实际的 PDF 文件路径
-        file_path = '陪标.pdf'
+        file_path = '测试文稿.pdf'
         result = analyze_pdf_pages(file_path)
         print('\n')
         print('总页数:', result[0])
