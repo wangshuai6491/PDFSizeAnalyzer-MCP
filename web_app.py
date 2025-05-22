@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import os
+import webbrowser
 from main import analyze_pdf_pages, convert_pdf_to_images, split_pdf_by_chapters
 
 app = Flask(__name__)
@@ -38,4 +39,6 @@ def analyze():
 
 if __name__ == '__main__':
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+        webbrowser.open('http://localhost:5000')
     app.run(debug=True)
