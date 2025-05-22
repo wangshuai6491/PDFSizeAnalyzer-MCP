@@ -39,7 +39,37 @@ def split_pdf_by_chapters(file_path: str) -> list:
             - end_page (int): 章节结束页码(1-based)
             - output_path (str): 章节PDF保存路径
     """
+### 4.从PDF中提取章节标题及其起始和结束页码。
 
+def extract_pdf_chapters(file_path: str)-> list:
+    """
+    从PDF中提取章节标题及其起始和结束页码。
+    
+    参数:
+        file_path: PDF文件路径
+    
+    返回:
+        chapters: 列表，每个元素是一个字典，包含章节信息
+            - level: 章节的层级（例如，1级书签、2级书签等）。层级越低，章节越重要或越靠上。
+            - title: 章节的标题。
+            - start_page: 章节的起始页码。
+            - end_page: 章节的结束页码。
+    """
+    
+### 5.根据用户输入的页码范围将PDF分隔成多个单独的PDF文件。
+
+def split_pdf_by_user_input(file_path: str, user_input: str) -> list:
+    """
+    根据用户输入的页码范围将PDF分隔成多个单独的PDF文件。
+
+    Args:
+        file_path: 要分割的PDF文件路径。
+        user_input: 用户输入的页码范围，如"1-5,6,7-9,9-12"。
+
+    Returns:
+        分割后的PDF文件路径列表。
+    """
+    
 ## 安装教程
 
 ### 1. 进入项目目录

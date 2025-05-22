@@ -193,6 +193,139 @@ def split_pdf_by_chapters(file_path: str) -> list:
     
     return result
 
+# 定义 MCP 工具：获取所有章节（书签）信息
+@mcp.tool()
+def extract_pdf_chapters(file_path: str)-> list:
+    """
+    从PDF中提取章节标题及其起始和结束页码。
+    
+    参数:
+        file_path: PDF文件路径
+    
+    返回:
+        chapters: 列表，每个元素是一个字典，包含章节信息
+            - level: 章节的层级（例如，1级书签、2级书签等）。层级越低，章节越重要或越靠上。
+            - title: 章节的标题。
+            - start_page: 章节的起始页码。
+            - end_page: 章节的结束页码。
+    """
+    chapters = []
+    doc = fitz.open(file_path)
+    
+    # 获取PDF的所有书签
+    toc = doc.get_toc()
+    
+    if not toc:
+        print("此PDF文件没有书签信息")
+        return []
+    
+    # 解析书签结构
+    for entry in toc:
+        # entry格式为：[层级, 标题, 页码, ...]
+        level, title, page_num = entry[0], entry[1], entry[2]
+        
+        # 处理起始页码（PyMuPDF的页码从0开始，普通书籍从1开始）
+        start_page = page_num + 1
+        
+        # 添加到章节列表
+        chapters.append({
+            'level': level,
+            'title': title,
+            'start_page': start_page
+        })
+    
+    # 确定每个章节的结束页码
+    total_pages = doc.page_count
+    for i in range(len(chapters)):
+        current_chapter = chapters[i]
+        
+        # 如果是最后一个章节，结束页码是PDF的最后一页
+        if i == len(chapters) - 1:
+            current_chapter['end_page'] = total_pages
+        else:
+            # 否则，结束页码是下一个相同层级章节的起始页码减1
+            next_chapter = chapters[i + 1]
+            while next_chapter['level'] > current_chapter['level']:
+                # 如果下一个章节是子章节，继续查找同级的下一个章节
+                if i + 1 >= len(chapters) - 1:
+                    # 如果是最后一个章节，结束页码是PDF的最后一页
+                    current_chapter['end_page'] = total_pages
+                    break
+                i += 1
+                next_chapter = chapters[i + 1]
+                
+                # 防止无限循环
+                if i >= len(chapters) - 1:
+                    current_chapter['end_page'] = total_pages
+                    break
+            
+            if 'end_page' not in current_chapter:
+                current_chapter['end_page'] = next_chapter['start_page'] - 1
+    
+    doc.close()
+    return chapters
+
+# 定义 MCP 工具：根据用户输入的页码范围将PDF分隔成多个单独的PDF文件。
+@mcp.tool()
+def split_pdf_by_user_input(file_path: str, user_input: str) -> list:
+    """
+    根据用户输入的页码范围将PDF分隔成多个单独的PDF文件。
+
+    Args:
+        file_path: 要分割的PDF文件路径。
+        user_input: 用户输入的页码范围，如"1-5,6,7-9,9-12"。
+
+    Returns:
+        分割后的PDF文件路径列表。
+    """
+    # 解析用户输入的页码范围
+    def parse_page_input(user_input):
+        page_ranges = []
+        parts = user_input.split(',')
+        for part in parts:
+            part = part.strip()
+            if '-' in part:
+                start, end = map(int, part.split('-'))
+                if start > end:
+                    raise ValueError(f"无效的页码范围：{part}")
+                page_ranges.append((start, end))
+            else:
+                page_num = int(part)
+                page_ranges.append((page_num, page_num))
+        return page_ranges
+
+    # 保存PDF的指定页面到新文件
+    def save_pages(doc, start_index, end_index, output_path):
+        output_doc = fitz.open()
+        output_doc.insert_pdf(doc, from_page=start_index, to_page=end_index)
+        output_doc.save(output_path)
+        output_doc.close()
+
+    page_ranges = parse_page_input(user_input)
+    
+    # 验证页码范围
+    doc = fitz.open(file_path)
+    total_pages = doc.page_count
+    for page_range in page_ranges:
+        start_page, end_page = page_range
+        if start_page < 1 or end_page > total_pages:
+            raise ValueError(f"页码超出范围，PDF共{total_pages}页")
+    
+    # 创建输出目录
+    output_dir = os.path.splitext(file_path)[0] + "_split"
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # 分割PDF并保存
+    output_files = []
+    for i, (start_page, end_page) in enumerate(page_ranges, 1):
+        output_file = os.path.join(output_dir, f"part_{i}_{start_page}-{end_page}.pdf")
+        # PyMuPDF的页码从0开始，所以需要减1
+        save_pages(doc, start_page - 1, end_page - 1, output_file)
+        output_files.append(output_file)
+    
+    doc.close()
+    return output_files
+
 # 主程序：运行 MCP 服务器
 if __name__ == "__main__":
     mcp.run()
