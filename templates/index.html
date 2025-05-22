@@ -119,16 +119,24 @@
                 } else if (action === 'split_chapters') {
                     resultHTML = `
                         <h3>章节拆分结果</h3>
-                        <ul>
-                            ${data.chapters.map(chapter => 
-                                `<li>
-                                    <strong>${chapter.title}</strong><br>
-                                    起始页: ${chapter.start_page}<br>
-                                    结束页: ${chapter.end_page}<br>
-                                    输出路径: ${chapter.output_path}
-                                </li>`
-                            ).join('')}
-                        </ul>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                            <thead>
+                                <tr>
+                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">标题</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">页码</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">输出路径</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.chapters.map(chapter => 
+                                    `<tr>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${chapter.title}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${chapter.start_page}-${chapter.end_page}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${chapter.output_path}</td>
+                                    </tr>`
+                                ).join('')}
+                            </tbody>
+                        </table>
                     `;
                 }
                 
