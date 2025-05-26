@@ -148,21 +148,10 @@ elif page == "按页码拆分PDF":
                     result = split_pdf_by_user_input(st.session_state.tmp_path, user_input)
                 
                 # 改进结果展示
-                with st.success(f"✅ 成功拆分为 {len(result)} 个文件"):
-                    result_dir = os.path.dirname(result[0])
-                    open_explorer(result_dir)
-                    
-                    # 优化下载方式
-                    for file in result:
-                        with st.container(border=True):
-                            with open(file, 'rb') as f:
-                                btn = st.download_button(
-                                    label=os.path.basename(file),
-                                    data=f.read(),
-                                    file_name=os.path.basename(file),
-                                    mime="application/pdf",
-                                    key=file
-                                )
+                result_dir = os.path.dirname(result[0])
+                st.success(f"✅ 成功拆分为 {len(result)} 个文件,结果文件夹路径: {result_dir}")
+                open_explorer(result_dir)
+
             except ValueError as ve:
                 st.error(f"❌ 输入格式错误：{str(ve)}")
             except Exception as e:
@@ -188,21 +177,10 @@ elif page == "按章节拆分":
                 with st.spinner("正在拆分选定章节..."):
                     try:
                         result = split_pdf_by_chapters(st.session_state.tmp_path, selected)
-                        
-                        with st.success(f"✅ 成功拆分为 {len(result)} 个文件"):
-                            result_dir = os.path.dirname(result[0])
-                            open_explorer(result_dir)
+                        result_dir = os.path.dirname(result[0])
+                        st.success(f"✅ 成功拆分为 {len(result)} 个文件，结果文件夹路径: {result_dir}")
+                        open_explorer(result_dir)
                             
-                            for file in result:
-                                with st.container(border=True):
-                                    with open(file, 'rb') as f:
-                                        btn = st.download_button(
-                                            label=os.path.basename(file),
-                                            data=f.read(),
-                                            file_name=os.path.basename(file),
-                                            mime="application/pdf",
-                                            key=file
-                                        )
                     except Exception as e:
                         st.error(f"❌ 拆分失败：{str(e)}")
 
