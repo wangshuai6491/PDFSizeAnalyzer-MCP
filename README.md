@@ -25,29 +25,29 @@ def convert_pdf_to_images(file_path: str)-> list:
         list: 包含所有生成图片文件路径的列表。
     """
 
-### 3.按章节或1级书签拆分PDF文件，返回包含章节信息和保存路径的字典列表。
+### 3.根据用户选择的章节拆分PDF文件，返回保存路径的字典列表。
 
-def split_pdf_by_chapters(file_path: str) -> list:
+def split_pdf_by_chapters(file_path: str, selected_chapters=None) -> list:
     """
-    按章节拆分PDF文件
+    根据用户选择的章节拆分PDF文件。
+
     参数:
-        file_path (str): PDF文件路径
+        file_path (str): PDF文件的路径。
+        selected_chapters (list, 可选): 要拆分的章节列表。如果为None，则拆分所有章节。
+
     返回:
-        list: 包含章节信息和保存路径的字典列表，每个字典包含以下字段:
-            - title (str): 章节标题
-            - start_page (int): 章节起始页码(1-based)
-            - end_page (int): 章节结束页码(1-based)
-            - output_path (str): 章节PDF保存路径
+        list: 包含所有拆分后PDF文件路径的列表。
     """
+
 ### 4.从PDF中提取章节标题及其起始和结束页码。
 
 def extract_pdf_chapters(file_path: str)-> list:
     """
     从PDF中提取章节标题及其起始和结束页码。
-    
+
     参数:
         file_path: PDF文件路径
-    
+
     返回:
         chapters: 列表，每个元素是一个字典，包含章节信息
             - level: 章节的层级（例如，1级书签、2级书签等）。层级越低，章节越重要或越靠上。
@@ -55,7 +55,7 @@ def extract_pdf_chapters(file_path: str)-> list:
             - start_page: 章节的起始页码。
             - end_page: 章节的结束页码。
     """
-    
+
 ### 5.根据用户输入的页码范围将PDF分隔成多个单独的PDF文件。
 
 def split_pdf_by_user_input(file_path: str, user_input: str) -> list:
@@ -69,7 +69,7 @@ def split_pdf_by_user_input(file_path: str, user_input: str) -> list:
     Returns:
         分割后的PDF文件路径列表。
     """
-    
+
 ## 安装教程
 
 ### 1. 进入项目目录
@@ -91,18 +91,10 @@ python -m venv venv
 
 ### 2. 安装依赖
 
-项目依赖 `pymupdf`、`fastmcp` 和 `PyPDF2`，注意是 `pymupdf`,不是 `fitz`
-
 可以使用以下命令安装：
 
 ```powershell
-pip install flask pymupdf fastmcp PyPDF2
-```
-
-或者使用国内镜像源加速安装：
-
-```powershell
-pip install pymupdf PyPDF2 streamlit pandas Pillow -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ### 3. 测试程序(确保程序输出正确，可以跳过)
@@ -116,7 +108,7 @@ python test_main.py
 如果程序正常运行，将输出：
 
 ```bash
-Ran 3 tests in 0.168s
+Ran 这里是mcp的数量 tests in 时间s
 
 OK
 ```
@@ -144,7 +136,9 @@ python generate_config.py
     }
 }
 ```
-## mcp使用说明
+
+## 使用说明
+
 ### mcp使用说明
 
 1. 确保已经按照安装教程完成环境配置。
@@ -152,40 +146,43 @@ python generate_config.py
 3. 测试运行，确保配置正确。
 
 - 测试1：调用mcp服务，告诉我一下这个pdf文件的页数,按打印尺寸分别统计下页数和页码.
+
 ### 本地浏览器使用说明
-1. 运行web_app.py
+
+1. 用streamlit运行app.py
+
 ```bash
-python web_app.py
+.\venv\Scripts\activate
+streamlit run app.py --server.port 8501
 ```
-2. 根据运行窗口生成的网址，在浏览器中打开。
+
+2. 根据运行窗口生成的网址，或自动打开的网址，在浏览器中打开。
 3. 上传pdf文件，根据需求点击按钮，结果展示在网页展示，并自动打开结果文件夹。
 
 ## pyinsaller打包教程
 
-1. 激活虚拟环境，安装 pyinstaller和pillow（处理图标的模块）：
+1. 激活虚拟环境
 
 ```bash
 .\venv\Scripts\activate
-pip install pyinstaller pillow
 ```
-同样给出国内镜像源
+
+2. 用spec打包，注意打包streamlit有点不同：
+
+需要额外的run_app.py文件，需要特定的文件夹hooks，这个文件夹内还需要特定的hook-streamlit.py。
+当然这些文件的内容都是固定的，不需要自己修改。
+
+有了上面的基础，就可以打包了。
 ```bash
-pip install pyinstaller pillow -i https://mirrors.aliyun.com/pypi/simple/
+pyinstaller run_app.spec
 ```
 
-2. 用spec打包：
-
-```bash
-pyinstaller web_app.spec
-```
-
-3. 打包完成后，在 dist 目录下会生成一个可执行文件。
+3. 打包完成后，在 dist 目录下会生成一个可执行文件,但这个执行文件无法运行，还需要把依赖的py文件复制到dist目录下。
+本项目中是：
+app.py # 前端主程序
+main.py # 后端主程序
 
 ## 注意事项
 
 - 确保使用的是虚拟环境中的 Python 解释器，涉及到依赖问题。
 - 先用纯英文目录测试，成功后再测试中文目录。
-
-
-.\venv\Scripts\activate
-streamlit run app.py --server.port 8501

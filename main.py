@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 import fitz
 from fastmcp import FastMCP
 import os
@@ -157,7 +158,7 @@ def extract_pdf_chapters(file_path: str)-> list:
         # entry格式为：[层级, 标题, 页码, ...]
         level, title, page_num = entry[0], entry[1], entry[2]
         
-        # 处理起始页码（PyMuPDF的页码从0开始，普通书籍从1开始）
+        # 处理起始页码（fitz的页码从0开始，普通书籍从1开始）
         start_page = page_num
         
         # 添加到章节列表
@@ -252,7 +253,7 @@ def split_pdf_by_user_input(file_path: str, user_input: str) -> list:
     output_files = []
     for i, (start_page, end_page) in enumerate(page_ranges, 1):
         output_file = os.path.join(output_dir, f"part_{i}_{start_page}-{end_page}.pdf")
-        # PyMuPDF的页码从0开始，所以需要减1
+        # fitz的页码从0开始，所以需要减1
         save_pages(doc, start_page - 1, end_page - 1, output_file)
         output_files.append(output_file)
     

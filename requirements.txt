@@ -1,4 +1,8 @@
-fastmcp
-pymupdf
+streamlit
+pandas
+Pillow
+PyMuPDF
 PyPDF2
-flask
+fastmcp
+pyinstaller
+pywin32
