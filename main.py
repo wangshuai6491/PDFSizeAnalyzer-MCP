@@ -158,7 +158,7 @@ def extract_pdf_chapters(file_path: str)-> list:
         level, title, page_num = entry[0], entry[1], entry[2]
         
         # 处理起始页码（PyMuPDF的页码从0开始，普通书籍从1开始）
-        start_page = page_num + 1
+        start_page = page_num
         
         # 添加到章节列表
         chapters.append({
@@ -279,6 +279,9 @@ def split_pdf_by_chapters(file_path: str, selected_chapters=None) -> list:
         chapters = [chapter for chapter in all_chapters if chapter['title'] in selected_chapters]
 
     split_files = []
+    base_name = os.path.splitext(os.path.basename(file_path))[0]
+    output_dir = os.path.join(os.path.dirname(file_path), base_name)
+    os.makedirs(output_dir, exist_ok=True)
     for chapter in chapters:
         start_page = chapter['start_page'] - 1
         end_page = chapter['end_page']
@@ -288,7 +291,7 @@ def split_pdf_by_chapters(file_path: str, selected_chapters=None) -> list:
             writer.add_page(reader.pages[page_num])
 
         chapter_title = chapter['title'].replace(' ', '_').replace('/', '_')
-        output_file = os.path.splitext(file_path)[0] + f'_{chapter_title}.pdf'
+        output_file = os.path.join(output_dir, f'{chapter_title}.pdf')
         with open(output_file, 'wb') as out_file:
             writer.write(out_file)
         split_files.append(output_file)
