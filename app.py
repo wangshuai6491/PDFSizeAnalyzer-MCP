@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 from PIL import Image
 import os
-import uuid
 import tempfile
 import platform
 import webbrowser
@@ -27,10 +26,12 @@ def create_temp_file(suffix='', prefix='tmp'):
         return path
 
 # 统一文件上传处理
+
 def handle_file_upload():
     uploaded_file = st.file_uploader("上传PDF文件", type=["pdf"], key="global_upload")
     if uploaded_file:
-        tmp_path = create_temp_file(suffix='.pdf')
+        original_filename = uploaded_file.name
+        tmp_path = os.path.join(output_dir, original_filename)
         with open(tmp_path, 'wb') as f:
             f.write(uploaded_file.read())
         st.session_state.tmp_path = tmp_path  # 存储到session保持引用
