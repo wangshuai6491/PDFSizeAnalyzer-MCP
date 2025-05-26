@@ -102,7 +102,7 @@ pip install flask pymupdf fastmcp PyPDF2
 或者使用国内镜像源加速安装：
 
 ```powershell
-pip install flask pymupdf fastmcp PyPDF2 -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install pymupdf PyPDF2 streamlit pandas Pillow -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ### 3. 测试程序(确保程序输出正确，可以跳过)
@@ -185,3 +185,7 @@ pyinstaller web_app.spec
 
 - 确保使用的是虚拟环境中的 Python 解释器，涉及到依赖问题。
 - 先用纯英文目录测试，成功后再测试中文目录。
+
+
+.\venv\Scripts\activate
+streamlit run app.py --server.port 8501

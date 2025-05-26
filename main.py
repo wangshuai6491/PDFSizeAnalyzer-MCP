@@ -2,6 +2,7 @@ import fitz
 from fastmcp import FastMCP
 import os
 from PyPDF2 import PdfReader, PdfWriter
+
 # 创建一个 FastMCP 实例
 mcp = FastMCP("PDFSizeAnalyzer-MCP")
 
@@ -100,6 +101,7 @@ def analyze_pdf_pages(file_path: str) -> tuple:
         for key, value in size_pages.items()
     ]
 
+# 定义 MCP 工具：将 PDF 的每一页转换为图片，并保存到以 PDF 名称命名的文件夹中。
 @mcp.tool()
 def convert_pdf_to_images(file_path: str)-> list:
     """
@@ -123,75 +125,6 @@ def convert_pdf_to_images(file_path: str)-> list:
         pix.save(str(image_path))
         image_paths.append(str(image_path))
     return image_paths
-
-@mcp.tool()
-def split_pdf_by_chapters(file_path: str) -> list:
-    """
-    按章节拆分PDF文件
-    参数:
-        file_path (str): PDF文件路径
-    返回:
-        list: 包含章节信息和保存路径的字典列表，每个字典包含以下字段:
-            - title (str): 章节标题
-            - start_page (int): 章节起始页码
-            - end_page (int): 章节结束页码
-            - output_path (str): 章节PDF保存路径
-    """
-    # 创建同名文件夹
-    output_dir = os.path.splitext(file_path)[0]
-    os.makedirs(output_dir, exist_ok=True)
-    
-    # 使用PyPDF2提取书签信息
-    reader = PdfReader(file_path)
-    chapters = []
-    
-    # 获取所有1级书签作为章节标题
-    for outline in reader.outline:
-        if isinstance(outline, dict) and outline.get('/Title') and outline.get('/Page'):
-            title = outline['/Title']
-            page_num = reader.get_destination_page_number(outline)
-            chapters.append({
-                'title': title,
-                'start_page': page_num + 1  # 转换为1-based索引
-            })
-    
-    # 使用PyPDF2进行拆分
-    if not chapters:
-        print("未找到章节信息")
-        return None
-    
-    reader = PdfReader(file_path)
-    result = []
-    
-    # 为每个章节创建PDF
-    for i, chapter in enumerate(chapters):
-        writer = PdfWriter()
-        start_page = chapter['start_page'] - 1  # 转换为0-based索引
-        end_page = chapters[i+1]['start_page'] - 1 if i+1 < len(chapters) else len(reader.pages)
-        
-        for page_num in range(start_page, end_page):
-            writer.add_page(reader.pages[page_num])
-        
-        # 保存章节PDF
-        output_path = os.path.join(output_dir, f"{chapter['title']}.pdf")
-        with open(output_path, 'wb') as out_pdf:
-            writer.write(out_pdf)
-        
-        # 保存章节信息到文本文件
-        info_path = os.path.join(output_dir, "chapters_info.txt")
-        with open(info_path, 'a', encoding='utf-8') as info_file:
-            end_page = chapters[i+1]['start_page'] - 1 if i+1 < len(chapters) else len(reader.pages)
-            info_file.write(f"{chapter['title']}: 第{chapter['start_page']}-{end_page}页\n")
-        
-        # 添加到结果字典
-        result.append({
-            'title': chapter['title'],
-            'start_page': chapter['start_page'],
-            'end_page': end_page,
-            'output_path': output_path
-        })
-    
-    return result
 
 # 定义 MCP 工具：获取所有章节（书签）信息
 @mcp.tool()
@@ -325,6 +258,42 @@ def split_pdf_by_user_input(file_path: str, user_input: str) -> list:
     
     doc.close()
     return output_files
+
+# 定义 MCP 工具：按章节拆分 PDF 文件，支持选择拆分的章节。
+@mcp.tool()
+def split_pdf_by_chapters(file_path: str, selected_chapters=None) -> list:
+    """
+    根据用户选择的章节拆分PDF文件。
+
+    参数:
+        file_path (str): PDF文件的路径。
+        selected_chapters (list, 可选): 要拆分的章节列表。如果为None，则拆分所有章节。
+
+    返回:
+        list: 包含所有拆分后PDF文件路径的列表。
+    """
+    if selected_chapters is None:
+        chapters = extract_pdf_chapters(file_path)
+    else:
+        all_chapters = extract_pdf_chapters(file_path)
+        chapters = [chapter for chapter in all_chapters if chapter['title'] in selected_chapters]
+
+    split_files = []
+    for chapter in chapters:
+        start_page = chapter['start_page'] - 1
+        end_page = chapter['end_page']
+        reader = PdfReader(file_path)
+        writer = PdfWriter()
+        for page_num in range(start_page, end_page):
+            writer.add_page(reader.pages[page_num])
+
+        chapter_title = chapter['title'].replace(' ', '_').replace('/', '_')
+        output_file = os.path.splitext(file_path)[0] + f'_{chapter_title}.pdf'
+        with open(output_file, 'wb') as out_file:
+            writer.write(out_file)
+        split_files.append(output_file)
+
+    return split_files
 
 # 主程序：运行 MCP 服务器
 if __name__ == "__main__":
