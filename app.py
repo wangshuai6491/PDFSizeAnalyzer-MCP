@@ -197,12 +197,12 @@ elif page == "PDF压缩":
         </a>
         <a href="https://www.pdf2go.com/zh/compress-pdf" target="_blank">
             <button style="padding: 8px 16px; background-color: #FF5722; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                PDF2Go，支持指定大小
+                PDF2Go
             </button>
         </a>
     </div>
     """, unsafe_allow_html=True)
-    
+    st.info("""**小贴士**: 没有任何一个工具是万能的，各有擅长，请多尝试。""")    
     st.info("""
     **小贴士**: 对于ArcGIS等软件导出的矢量PDF，如果常规压缩效果不佳，
     可以尝试先将PDF转为图片型PDF再进行压缩，也可考虑设置缩小页面尺寸为A4、A3。
