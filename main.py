@@ -92,15 +92,25 @@ def analyze_pdf_pages(file_path: str) -> tuple:
         ranges.append(f"{start}-{end}" if start != end else f"{start}")
         return ", ".join(ranges)
 
-    return total_pages, [
-        {
-            "size": key,
-            "paper_type": value[0] if value[0] else f'Custom{int(key[0])}+{int(key[1])}',
-            "total_pages": len(value[1]),
-            "page_numbers": merge_page_numbers(value[1])
-        }
-        for key, value in size_pages.items()
-    ]
+    # 合并相同纸张类型的页码
+    merged_results = {}
+    for key, value in size_pages.items():
+        paper_type = value[0] if value[0] else f'Custom{int(key[0])}+{int(key[1])}'
+        if paper_type not in merged_results:
+            merged_results[paper_type] = {
+                "size": key,
+                "paper_type": paper_type,
+                "total_pages": 0,
+                "page_numbers": []
+            }
+        merged_results[paper_type]["total_pages"] += len(value[1])
+        merged_results[paper_type]["page_numbers"] += value[1]
+    
+    # 对合并后的页码进行排序和范围合并
+    for result in merged_results.values():
+        result["page_numbers"] = merge_page_numbers(result["page_numbers"])
+    
+    return total_pages, list(merged_results.values())
 
 # 定义 MCP 工具：将 PDF 的每一页转换为图片，并保存到以 PDF 名称命名的文件夹中。
 @mcp.tool()
