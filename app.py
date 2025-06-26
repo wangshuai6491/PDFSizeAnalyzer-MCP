@@ -11,7 +11,8 @@ from main import (
     split_pdf_by_chapters,
     extract_pdf_chapters,
     split_pdf_by_user_input,
-    convert_pdf_to_images
+    convert_pdf_to_images,
+    compress_pdf
 )
 
 # 初始化配置
@@ -55,7 +56,7 @@ st.title("📑 PDF分析工具")
 # 侧边栏导航
 with st.sidebar:
     st.header("功能导航")
-    page = st.radio("选择功能", ["分析页数", "章节信息提取", "转换图片", "按页码拆分PDF", "按章节拆分"])
+    page = st.radio("选择功能", ["分析页数", "章节信息提取", "转换图片", "按页码拆分PDF", "按章节拆分", "PDF压缩"])
 
 # 主内容区
 if page == "分析页数":
@@ -183,6 +184,42 @@ elif page == "按章节拆分":
                             
                     except Exception as e:
                         st.error(f"❌ 拆分失败：{str(e)}")
+
+elif page == "PDF压缩":
+
+    st.subheader("在线PDF压缩工具（推荐）")
+    st.markdown("""
+    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <a href="https://www.ilovepdf.com/zh-cn/compress_pdf" target="_blank">
+            <button style="padding: 8px 16px; background-color: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                iLovePDF
+            </button>
+        </a>
+        <a href="https://www.pdf2go.com/zh/compress-pdf" target="_blank">
+            <button style="padding: 8px 16px; background-color: #FF5722; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                PDF2Go，支持指定大小
+            </button>
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.info("""
+    **小贴士**: 对于ArcGIS等软件导出的矢量PDF，如果常规压缩效果不佳，
+    可以尝试先将PDF转为图片型PDF再进行压缩，也可考虑设置缩小页面尺寸为A4、A3。
+    下面本地工具将提供矢量PDF转为图片型PDF的工具，其他操作可通过在线PDF压缩工具实现。
+    """)
+    if handle_file_upload():    
+        st.subheader("附图类：矢量型PDF转为图片型PDF")
+        quality = st.slider("选择图片质量,数字越大则图片越清晰，同时体积越大", 1, 100, 100)
+        if st.button("转换为图片型PDF"):
+            with st.spinner("正在转换PDF文件..."):
+                try:
+                    compressed_path = compress_pdf(st.session_state.tmp_path, quality)
+                    st.success(f"✅ 转换完成，文件已保存到: {compressed_path}")
+                    st.info("建议将转换后的图片型PDF再用上方在线工具进一步压缩")
+                    open_explorer(os.path.dirname(compressed_path))
+                except Exception as e:
+                    st.error(f"❌ 转换失败: {str(e)}")
 
 # 底部状态栏
 st.markdown("---")

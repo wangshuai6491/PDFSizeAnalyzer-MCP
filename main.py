@@ -127,6 +127,76 @@ def convert_pdf_to_images(file_path: str)-> list:
         image_paths.append(str(image_path))
     return image_paths
 
+# 定义 MCP 工具：压缩PDF文件，将PDF文件转换为图片型PDF，通过控制图片质量1-100实现体积压缩
+@mcp.tool()
+def compress_pdf(file_path: str, quality: int = 75) -> str:
+    """
+    PDF文件压缩(图片型)
+    
+    参数:
+        file_path: PDF文件路径
+        quality: 压缩质量 (0-100)
+    
+    返回:
+        str: 压缩后的PDF文件路径
+    """
+    doc = fitz.open(file_path)
+
+    pdf_name = os.path.splitext(os.path.basename(file_path))[0]
+    output_path = os.path.join(os.path.dirname(file_path), f"{pdf_name}_图片型_压缩质量{quality}.pdf")
+    
+    # 创建新的PDF文档
+    new_doc = fitz.open()
+    
+    # 逐页处理
+    for page in doc:
+        # 获取页面内容作为图像，应用质量参数
+        pix = page.get_pixmap(matrix=fitz.Matrix(1.0, 1.0), 
+                            colorspace=fitz.csRGB, 
+                            clip=None, 
+                            alpha=False, 
+                            annots=True,
+                            dpi=int(72 * (quality/100)))
+        # 创建新页面并插入压缩后的图像
+        new_page = new_doc.new_page(width=page.rect.width, height=page.rect.height)
+        new_page.insert_image(page.rect, pixmap=pix, keep_proportion=True)
+    
+    # 保存压缩后的PDF
+    new_doc.save(output_path, deflate=True, garbage=4, clean=True)
+    new_doc.close()
+    doc.close()
+    
+    return output_path
+
+# 定义 MCP 工具：压缩PDF文件，通过删除不必要的元素实现体积压缩
+@mcp.tool()
+def optimize_pdf(file_path: str) -> str:
+    """
+    PDF优化压缩(文本保留型)
+    
+    参数:
+        file_path: PDF文件路径
+    
+    返回:
+        str: 优化后的PDF文件路径
+    """
+    doc = fitz.open(file_path)
+    
+    pdf_name = os.path.splitext(os.path.basename(file_path))[0]
+    output_path = os.path.join(os.path.dirname(file_path), f"{pdf_name}_优化压缩.pdf")
+    
+    # 保存优化后的PDF
+    doc.save(output_path, 
+            garbage=4,  # 移除未引用对象
+            deflate=True,  # 压缩流
+            clean=True,  # 清理文档结构
+            linear=True,  # 线性化PDF
+            deflate_fonts=True,  # 压缩字体
+            deflate_images=True)  # 压缩图像
+    
+    doc.close()
+    return output_path
+
 # 定义 MCP 工具：获取所有章节（书签）信息
 @mcp.tool()
 def extract_pdf_chapters(file_path: str)-> list:

@@ -70,6 +70,30 @@ def split_pdf_by_user_input(file_path: str, user_input: str) -> list:
         分割后的PDF文件路径列表。
     """
 
+### 6.压缩PDF文件，将PDF文件转换为图片型PDF，通过控制图片质量1-100实现体积压缩
+def compress_pdf(file_path: str, quality: int = 75) -> str:
+    """
+    PDF文件压缩(图片型)
+    
+    参数:
+        file_path: PDF文件路径
+        quality: 压缩质量 (0-100)
+    
+    返回:
+        str: 压缩后的PDF文件路径
+    """
+### 7.压缩PDF文件，通过删除不必要的元素实现体积压缩
+def optimize_pdf(file_path: str) -> str:
+    """
+    PDF优化压缩(文本保留型)
+    
+    参数:
+        file_path: PDF文件路径
+    
+    返回:
+        str: 优化后的PDF文件路径
+    """
+
 ## 安装教程
 
 ### 1. 进入项目目录
