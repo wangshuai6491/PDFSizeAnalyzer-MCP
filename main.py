@@ -379,6 +379,28 @@ def split_pdf_by_chapters(file_path: str, selected_chapters=None) -> list:
 
     return split_files
 
+# 定义 MCP 工具：合并多个PDF文件
+@mcp.tool()
+def merge_pdfs(file_paths: list, output_path: str) -> str:
+    """
+    合并多个PDF文件为一个PDF文件
+    
+    参数:
+        file_paths: 要合并的PDF文件路径列表
+    返回:
+        str: 合并后的PDF文件路径
+    """
+    output_doc = fitz.open()
+    
+    for file_path in file_paths:
+        doc = fitz.open(file_path)
+        output_doc.insert_pdf(doc)
+        doc.close()
+    
+    output_doc.save(output_path)
+    output_doc.close()
+    return output_path
+
 # 主程序：运行 MCP 服务器
 if __name__ == "__main__":
     mcp.run()

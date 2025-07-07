@@ -12,7 +12,8 @@ from main import (
     extract_pdf_chapters,
     split_pdf_by_user_input,
     convert_pdf_to_images,
-    compress_pdf
+    compress_pdf,
+    merge_pdfs
 )
 
 # 初始化配置
@@ -56,7 +57,7 @@ st.title("📑 PDF分析工具")
 # 侧边栏导航
 with st.sidebar:
     st.header("功能导航")
-    page = st.radio("选择功能", ["分析页数", "章节信息提取", "转换图片", "按页码拆分PDF", "按章节拆分", "PDF压缩"])
+    page = st.radio("选择功能", ["分析页数", "章节信息提取", "转换图片", "按页码拆分PDF", "按章节拆分", "PDF压缩", "PDF合并"])
 
 # 主内容区
 if page == "分析页数":
@@ -220,6 +221,70 @@ elif page == "PDF压缩":
                     open_explorer(os.path.dirname(compressed_path))
                 except Exception as e:
                     st.error(f"❌ 转换失败: {str(e)}")
+
+elif page == "PDF合并":
+    st.subheader("📂 PDF文件合并")
+    
+    # 使用列布局
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # 多文件上传
+        uploaded_files = st.file_uploader("上传多个PDF文件", type=["pdf"], accept_multiple_files=True, key="merge_upload")
+    
+    if uploaded_files and len(uploaded_files) > 1:
+        with col2:
+            st.subheader("📂 文件顺序调整")
+            st.write("拖拽文件以调整合并顺序")
+        
+            # 创建可排序的文件列表
+            files_list = [file.name for file in uploaded_files]
+            
+            # 使用streamlit-sortables组件实现拖拽排序
+            try:
+                from streamlit_sortables import sort_items
+                sorted_items = sort_items(files_list, direction="vertical")
+                
+                # 根据排序结果重新排列文件
+                # Create mapping from filename to file object
+                file_map = {file.name: file for file in uploaded_files}
+                sorted_files = [file_map[item] for item in sorted_items]
+                uploaded_files = sorted_files
+            except ImportError:
+                st.warning("⚠️ 未安装streamlit-sortables组件，使用默认顺序")
+            
+        output_name = st.text_input("输入合并后的文件名（无需后缀）", "merged_pdf")
+        
+        if st.button("开始合并"):
+            try:
+                # 保存临时文件
+                file_paths = []
+                for uploaded_file in uploaded_files:
+                    tmp_path = os.path.join(output_dir, uploaded_file.name)
+                    with open(tmp_path, 'wb') as f:
+                        f.write(uploaded_file.read())
+                    file_paths.append(tmp_path)
+                
+                output_path = os.path.join(output_dir, f"{output_name}.pdf")
+                
+                with st.spinner("正在合并PDF文件..."):
+                    merged_path = merge_pdfs(file_paths, output_path)
+                    
+                st.success(f"✅ 合并完成，文件已保存到: {merged_path}")
+                open_explorer(os.path.dirname(merged_path))
+                
+            except Exception as e:
+                st.error(f"❌ 合并失败: {str(e)}")
+            finally:
+                # 清理临时文件
+                for tmp_path in file_paths:
+                    if os.path.exists(tmp_path):
+                        try:
+                            os.remove(tmp_path)
+                        except Exception as e:
+                            st.warning(f"删除临时文件时出错: {e}")
+    elif uploaded_files and len(uploaded_files) == 1:
+        st.warning("⚠️ 请上传至少2个PDF文件进行合并")
 
 # 底部状态栏
 st.markdown("---")

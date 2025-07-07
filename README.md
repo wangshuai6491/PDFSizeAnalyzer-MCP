@@ -82,6 +82,7 @@ def compress_pdf(file_path: str, quality: int = 75) -> str:
     返回:
         str: 压缩后的PDF文件路径
     """
+
 ### 7.压缩PDF文件，通过删除不必要的元素实现体积压缩
 def optimize_pdf(file_path: str) -> str:
     """
@@ -92,6 +93,18 @@ def optimize_pdf(file_path: str) -> str:
     
     返回:
         str: 优化后的PDF文件路径
+    """
+
+
+### 8.合并PDF文件
+def merge_pdfs(file_paths: list, output_path: str) -> str:
+    """
+    合并多个PDF文件为一个PDF文件
+    
+    参数:
+        file_paths: 要合并的PDF文件路径列表
+    返回:
+        str: 合并后的PDF文件路径
     """
 
 ## 安装教程
