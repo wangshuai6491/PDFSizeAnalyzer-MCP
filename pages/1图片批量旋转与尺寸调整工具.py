@@ -183,4 +183,5 @@ if folder:
         open_explorer(result_folder)
 # 底部状态栏
 st.markdown("---")
-st.caption("🚀 开发者提示：页面缓存可通过 Ctrl+Shift+R 强制刷新")
+st.caption("🚀 页面缓存可通过 Ctrl+Shift+R 强制刷新")
+st.caption("🚀 开发者：谢海基，集成打包：王帅")
