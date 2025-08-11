@@ -71,36 +71,38 @@ def split_pdf_by_user_input(file_path: str, user_input: str) -> list:
     """
 
 ### 6.压缩PDF文件，将PDF文件转换为图片型PDF，通过控制图片质量1-100实现体积压缩
+
 def compress_pdf(file_path: str, quality: int = 75) -> str:
     """
     PDF文件压缩(图片型)
-    
+
     参数:
         file_path: PDF文件路径
         quality: 压缩质量 (0-100)
-    
+
     返回:
         str: 压缩后的PDF文件路径
     """
 
 ### 7.压缩PDF文件，通过删除不必要的元素实现体积压缩
+
 def optimize_pdf(file_path: str) -> str:
     """
     PDF优化压缩(文本保留型)
-    
+
     参数:
         file_path: PDF文件路径
-    
+
     返回:
         str: 优化后的PDF文件路径
     """
 
-
 ### 8.合并PDF文件
+
 def merge_pdfs(file_paths: list, output_path: str) -> str:
     """
     合并多个PDF文件为一个PDF文件
-    
+
     参数:
         file_paths: 要合并的PDF文件路径列表
     返回:
@@ -126,7 +128,7 @@ python -m venv venv
 .\venv\Scripts\activate
 ```
 
-### 2. 安装依赖
+### 3. 安装依赖
 
 可以使用以下命令安装：
 
@@ -134,29 +136,13 @@ python -m venv venv
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-### 3. 测试程序(确保程序输出正确，可以跳过)
-
-运行'test_main.py'文件测试程序是否正常运行：
-
-```powershell
-python test_main.py
-```
-
-如果程序正常运行，将输出：
-
-```bash
-Ran 这里是mcp的数量 tests in 时间s
-
-OK
-```
-
 ### 4. 生成配置文件（以Trae为例）
 
-运行 `generate_config.py` 文件生成 `mcp_config.json`：
+运行 `生成mcp服务需要的配置文件.py` 文件生成 `mcp_config.json`：
 在命令行中执行
 
 ```powershell
-python generate_config.py
+python 生成mcp服务需要的配置文件.py
 ```
 
 将自动生成 `mcp_config.json` 文件，内容如下：
@@ -209,15 +195,17 @@ streamlit run app.py --server.port 8501
 需要额外的run_app.py文件，需要特定的文件夹hooks，这个文件夹内还需要特定的hook-streamlit.py。
 当然这些文件的内容都是固定的，不需要自己修改。
 
-有了上面的基础，就可以打包了。
+有了上面的基础，就可以打包了。注意修改run_app.spec中datas的文件夹路径
+
 ```bash
 pyinstaller run_app.spec
 ```
 
 3. 打包完成后，在 dist 目录下会生成一个可执行文件,但这个执行文件无法运行，还需要把依赖的py文件复制到dist目录下。
-本项目中是：
-app.py # 前端主程序
-main.py # 后端主程序
+   本项目中是：
+   app.py # 前端主程序
+   main.py # 后端主程序
+   pages/子页面的py文件 # 子页面的py文件
 
 ## 注意事项
 
