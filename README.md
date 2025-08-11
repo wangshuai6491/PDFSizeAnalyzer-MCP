@@ -1,3 +1,24 @@
+# 项目介绍
+
+由于项目基于streamlit并打包，打包后的exe文件只发挥python解释器的功能，而代码仍然以.py的python文件存在，在程序运行时才读取.py代码并运行，这就允许用户在pages中不断增加新的.py文件，增加新的功能。
+
+## 项目结构
+
+```
+打包后的项目结构/
+├── PDF分析和图片处理工具.exe # 启动程序
+├── PDF.py # 第一个页面
+├── main.py # PDF页面的后端程序，此文件以mcp服务的形式运行，可同时支持AI以MCP方式运行
+├── pages/ # 子页面文件夹，每个子页面都是一个.py文件
+│   ├── 图片批量旋转与尺寸调整工具.py
+│   ├── 开源地址.py
+│   ├── 后续新增的其他功能.py
+
+```
+## 已打包的模块
+
+hiddenimports=['streamlit', 'streamlit.web.cli', 'streamlit-sortables', 'pandas', 'PIL', 'PyMuPDF', 'fitz', 'fastmcp', 'PyPDF2', 'tkinter', 'tkinter.filedialog', 'tkinter.simpledialog', 'tkinter.messagebox', 'tkinter.commondialog', 'tkinter.colorchooser', 'tkinter.font', 'tkinter.ttk', 'tkinter.scrolledtext', 'tkinter.dnd', 'tkinter.constants', 'tkinter.tix'],
+
 # PDFSizeAnalyzer-MCP
 
 ## mcp工具介绍
@@ -172,11 +193,11 @@ python 生成mcp服务需要的配置文件.py
 
 ### 本地浏览器使用说明
 
-1. 用streamlit运行app.py
+1. 用streamlit运行PDF.py
 
 ```bash
 .\venv\Scripts\activate
-streamlit run app.py --server.port 8501
+streamlit run PDF.py --server.port 8501
 ```
 
 2. 根据运行窗口生成的网址，或自动打开的网址，在浏览器中打开。
@@ -203,7 +224,7 @@ pyinstaller run_app.spec
 
 3. 打包完成后，在 dist 目录下会生成一个可执行文件,但这个执行文件无法运行，还需要把依赖的py文件复制到dist目录下。
    本项目中是：
-   app.py # 前端主程序
+   PDF.py # 前端主程序
    main.py # 后端主程序
    pages/子页面的py文件 # 子页面的py文件
 
