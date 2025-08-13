@@ -72,11 +72,13 @@ def main():
             st.download_button("⬇️ 立即下载", data, fname)
 
     else:
+        st.error("程序正在开发，暂不支持整歌单下载")
+        """
         pid = st.text_input("歌单 ID", placeholder="2566843552")
         if st.button("下载", type="primary") and pid:
             with st.spinner("解析并打包中..."):
                 fname, data = fetch_playlist(pid)
             st.download_button("⬇️ 立即下载 ZIP", data, fname)
-
+        """
 if __name__ == "__main__":
     main()
