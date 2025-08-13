@@ -53,11 +53,20 @@ def open_explorer(path):
 # 页面配置
 st.set_page_config(layout="wide", initial_sidebar_state="expanded")
 st.title("📑 PDF分析工具")
+st.caption("由于前端js可以在浏览器环境实现数据加工，实现私密文件只在本地浏览器运行，不会上传到服务器，对数据保密性更强，故此，决定将前端能实现的功能全部迁移：")
+st.caption("前端地址：https://jiheutools-knvf60mx.maozi.io/")
+st.caption("已迁移功能：分析页数，转换图片，按页码拆分PDF, PDF合并")
+st.caption("未迁移功能：章节信息提取，按章节拆分PDF，PDF压缩")
 
 # 侧边栏导航
 with st.sidebar:
     st.header("功能导航")
-    page = st.radio("选择功能", ["分析页数", "章节信息提取", "转换图片", "按页码拆分PDF", "按章节拆分", "PDF压缩", "PDF合并"])
+    # 通过功能导航界面隐藏了部分功能，如果本地打包需要，可以展开注释
+    # 程序中有很多对本地文件的操作，如果程序只在本地运行，可以不受影像，但如果运行在云端，则需要考虑下载问题
+    # 我的处理思路是io.BytesIO() 内存缓冲区 + zipfile.ZipFile 生成压缩包 + 把内存缓冲区交给 st.download_button，全程不落盘，直接提供下载结果。
+    
+    # page = st.radio("选择功能", ["分析页数", "章节信息提取", "转换图片", "按页码拆分PDF", "按章节拆分", "PDF压缩", "PDF合并"])
+    page = st.radio("选择功能", ["章节信息提取"])
 
 # 主内容区
 if page == "分析页数":
