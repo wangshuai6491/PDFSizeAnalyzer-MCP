@@ -5,5 +5,5 @@ PyMuPDF
 PyPDF2
 fastmcp
 pyinstaller
-pywin32
 streamlit-sortables
+lxml
