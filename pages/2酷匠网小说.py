@@ -3,6 +3,7 @@ from lxml import etree
 import streamlit as st
 import os
 import threading
+import zipfile
 
 # 全局变量，用于控制爬取程序的运行状态
 stop_event = threading.Event()
@@ -63,6 +64,14 @@ def getlist(url, book_id, start_chapter=None, end_chapter=None):
     status_text.success("爬取完成！")
     progress_bar.empty()
 
+# 将文件夹打包成zip文件
+def zip_folder(folder_path, zip_path):
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                zipf.write(file_path, os.path.relpath(file_path, folder_path))
+
 # Streamlit界面
 def main():
     global stop_event
@@ -85,7 +94,7 @@ def main():
     col3, col4 = st.columns(2)  # 创建两列
     if col3.button("开始爬取"):
         if urlsh:
-            url = f'http://www.kujiang.com/book/{urlsh}/catalog'
+            url = f"http://www.kujiang.com/book/{urlsh}/catalog"
             st.write(f"正在爬取小说：{url}")
             getlist(url, urlsh, start_chapter if start_chapter > 1 else None, end_chapter if end_chapter > 1 else None)
             st.success(f"爬取完成！小说已保存到文件夹：book_{urlsh}")
@@ -95,6 +104,13 @@ def main():
     if col4.button("停止爬取"):
         stop_event.set()  # 设置停止事件
         st.warning("正在尝试停止爬取...")
+
+    # 如果文件夹存在，提供下载按钮
+    if os.path.exists(f"book_{urlsh}"):
+        zip_path = f"book_{urlsh}.zip"
+        zip_folder(f"book_{urlsh}", zip_path)
+        with open(zip_path, "rb") as f:
+            st.download_button("下载小说", f, file_name=zip_path)
 
 if __name__ == '__main__':
     main()
